@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import Header from './components/Header'
-import Post from './components/Post'
-import Comments from './components/Comments'
-import Form from './components/Form'
-
+import Header from './components/Header';
+import Post from './components/Post';
+import Comments from './components/Comments';
+import Form from './components/Form';
 
 function App() {
 
@@ -13,22 +11,17 @@ function App() {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/posts/1")
+    fetch("https://jsonplaceholder.typicode.com/posts/1?_embed=comments&_expand=user")
       .then(response => response.json())
-      .then(data => setPost(data))
+      .then(data => getData(data.comments, data.title, data.body, data.user.name))
   }, []);
 
-  useEffect(() => {
-      fetch("https://jsonplaceholder.typicode.com/posts/11?_embed=comments")
-        .then(response => response.json())
-        .then(data => setComments(data.comments))
-  }, []);
-
-  useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/posts/1?_expand=user")
-      .then(response => response.json())
-      .then(response => setName(response.user.name))
-  }, []);
+  const getData = (c, title, body, author) => {
+    let postData = { title, body}
+    setComments(c)
+    setPost(postData)
+    setName(author)
+  }
 
   return (
     <div className="App">
@@ -38,7 +31,7 @@ function App() {
             <div className="uk-container">
                 <Post post={post} name={name}/>
                 <Comments comments={comments}/>
-                <Form comments={comments}/>
+                <Form comments={comments} setComments={setComments}/>
             </div>
         </div>
       </main>
